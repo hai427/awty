@@ -38,9 +38,7 @@ public class MainActivity extends AppCompatActivity {
         start = (Button) findViewById(R.id.start);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        final Intent intent = new Intent(this, MessageBroadcastReceiver.class);
 
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (mainActivity.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
@@ -97,16 +95,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!message.getText().equals("") && !number.getText().equals("") && !minutes.getText().equals("")) {
+
+                    Intent intent = new Intent(getApplicationContext(), MessageBroadcastReceiver.class);
+
                     intent.putExtra("Message", message.getText().toString());
                     intent.putExtra("Phone", number.getText().toString());
 
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+
                     if (start.getText().equals("Start")) {
                         start.setText("Stop");
-                        alarmManager.cancel(pendingIntent);
-                    } else {
-                        start.setText("Start");
                         int val = Integer.parseInt(minutes.getText().toString());
                         sendMessage(val, alarmManager, pendingIntent);
+                    } else {
+                        start.setText("Start");
+                        alarmManager.cancel(pendingIntent);
                     }
                 }
             }
